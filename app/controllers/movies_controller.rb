@@ -11,7 +11,6 @@ class MoviesController < ApplicationController
   end
 
   def index
-    puts params
     if !params[:sort_by].nil?
       # Sort by the sort_by parameter
       @movies = Movie.order(params[:sort_by])
