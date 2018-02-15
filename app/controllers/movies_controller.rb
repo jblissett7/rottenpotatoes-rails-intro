@@ -11,14 +11,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if !params[:sort_by].nil?
+    @all_ratings = ['G','PG','PG-13','R']
+    @ratings_checked = Hash.new
+    @all_ratings.each do |rating|
+      @ratings_checked[rating] = "1"
+    end
+      
+    if !params[:ratings].nil?
+      @movies = Movie.where(:rating => params[:ratings].keys())
+      @ratings_checked = params[:ratings]
+    elsif !params[:sort_by].nil?
       # Sort by the sort_by parameter
       @movies = Movie.order(params[:sort_by])
-      @sort_type = params[:sort_by]
-      
     else
       @movies = Movie.all
-      @sort_type = nil
     end
     
   end
