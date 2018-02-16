@@ -12,19 +12,38 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ['G','PG','PG-13','R']
+    path_changed = false
+    
     @ratings_checked = Hash.new
     @all_ratings.each do |rating|
       @ratings_checked[rating] = "1"
     end
       
+      puts params[:ratings]
     if !params[:ratings].nil?
+      session[:current_ratings] = params[:ratings]
       @movies = Movie.where(:rating => params[:ratings].keys())
       @ratings_checked = params[:ratings]
-    elsif !params[:sort_by].nil?
+    elsif !session[:current_ratings].nil?
+       @movies = Movie.where(:rating => session[:current_ratings].keys())
+       @ratings_checked = session[:current_ratings]
+       path_changed = true
+    end
+      
+    if !params[:sort_by].nil?
       # Sort by the sort_by parameter
-      @movies = Movie.order(params[:sort_by])
+      session[:current_sort] = params[:sort_by]
+      @movies = @movies.order(params[:sort_by])
+    elsif !session[:current_sort].nil?
+      @movies = @movies.order(session[:current_sort])
+      params[:sort_by] = session[:current_sort]
+      path_changed = true
     else
-      @movies = Movie.all
+      @movies = @movies.all
+    end
+    
+    if path_changed
+      redirect_to(movies_path(:ratings => session[:current_ratings], :sort_by => session[:current_sort]))
     end
     
   end
