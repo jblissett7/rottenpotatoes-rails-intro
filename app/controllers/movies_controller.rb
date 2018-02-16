@@ -28,6 +28,8 @@ class MoviesController < ApplicationController
        @movies = Movie.where(:rating => session[:current_ratings].keys())
        @ratings_checked = session[:current_ratings]
        path_changed = true
+     else
+       @movies = Movie.all
     end
       
     if !params[:sort_by].nil?
